@@ -1,11 +1,15 @@
-const { MongoClient, ServerApiVersion } = require("mongodb");
-const express = require("express");
-const app = express();
-const cors = require("cors");
-const port = process.env.PORT || 5000;
 require("dotenv").config();
+const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
+const express = require("express");
+const cors = require("cors");
+
+const app = express();
+const port = process.env.PORT || 5000;
+
+// middle wares
 app.use(cors());
 app.use(express.json());
+
 const uri = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASS}@cluster0.gzvbawv.mongodb.net/?retryWrites=true&w=majority`;
 
 const client = new MongoClient(uri, {
@@ -30,7 +34,7 @@ async function run() {
       const id = req.params.id;
       const query = { _id: ObjectId(id) };
       const service = await serviceCollection.findOne(query);
-      res.send(service);
+      res.json(service);
     });
 
     // orders api
@@ -42,7 +46,7 @@ async function run() {
           email: req.query.email,
         };
       }
-
+      console.log(query);
       const cursor = orderCollection.find(query);
       const orders = await cursor.toArray();
       res.send(orders);
